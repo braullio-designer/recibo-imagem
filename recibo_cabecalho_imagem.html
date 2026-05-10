@@ -154,7 +154,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;pad
   display:flex;
   flex-direction:column;
   padding:1.5mm 2mm 1.5mm 2mm;
-  gap:.7mm;
+  gap:0;
 }
 
 /* RECIBO / ORÇAMENTO */
@@ -164,26 +164,28 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;pad
   text-align:right;
   text-transform:uppercase;
   letter-spacing:.3px;
-  padding-bottom:.5mm;
+  padding-bottom:0;
+  margin-bottom:0;
 }
 
 /* CAMPOS CLIENTE */
 .campos{
   display:flex;
   flex-direction:column;
-  gap:.8mm;
+  gap:2mm;
+  padding:1.5mm 0;
 }
 .linha{
   display:flex;
   gap:1.5mm;
-  font-size:6pt;
+  font-size:6.5pt;
   align-items:flex-end;
 }
 .lbl{font-weight:700;white-space:nowrap;}
-.ul{flex:1;border-bottom:1px solid #000;min-height:7px;}
+.ul{flex:1;border-bottom:1px solid #000;min-height:9px;}
 
 /* TABELA */
-.tbl-wrap{flex:1;}
+.tbl-wrap{flex:1;margin-bottom:0;}
 .tbl{
   width:100%;
   border-collapse:collapse;
@@ -224,8 +226,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;pad
   justify-content:space-between;
   align-items:flex-end;
   flex-shrink:0;
-  padding-top:1mm;
-  margin-top:1mm;
+  padding-top:1.5mm;
+  margin-top:0;
 }
 /* Assinatura — centralizada, linha maior */
 .ass{
