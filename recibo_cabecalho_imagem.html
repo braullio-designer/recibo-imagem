@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Gerador de Recibo — Cabeçalho por Imagem</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+/* ── APP ── */
+:root{
+  --bg:#0c0c0c;--card:#141414;--border:#2a2a2a;
+  --acc:#f0d060;--dim:rgba(240,208,96,0.08);
+  --text:#e0e0e0;--muted:#505050;--red:#d94f4f;--green:#4dbe7a;--r:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;padding-bottom:96px;}
+
+.hdr{position:sticky;top:0;z-index:100;background:rgba(12,12,12,.98);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;}
+.hdr-l{display:flex;align-items:center;gap:9px;}
+.badge{background:var(--acc);color:#000;font-family:'DM Mono',monospace;font-size:8px;font-weight:600;letter-spacing:2px;padding:3px 8px;border-radius:3px;text-transform:uppercase;}
+.hdr-t{font-size:14px;font-weight:600;letter-spacing:.2px;}
+.hdr-v{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
+
+.wrap{padding:20px 18px;}
+.sec{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--acc);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.sec::after{content:'';flex:1;height:1px;background:var(--border);}
+.mt{margin-top:20px;}
+
+.field{margin-bottom:11px;}
+.field label{display:block;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.field input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:12px 14px;border-radius:var(--r);outline:none;-webkit-appearance:none;transition:border-color .15s;}
+.field input:focus{border-color:var(--acc);}
+.field input::placeholder{color:var(--muted);font-size:13px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* Upload box */
+.upbox{
+  border:1.5px dashed var(--border);border-radius:var(--r);
+  padding:20px 16px;text-align:center;background:var(--card);
+  cursor:pointer;position:relative;display:block;
+  touch-action:manipulation;margin-bottom:4px;transition:border-color .15s;
+}
+.upbox:active,.upbox.has{border-color:var(--acc);background:var(--dim);}
+.up-ico{font-size:22px;margin-bottom:4px;}
+.up-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;}
+.up-hint{font-family:'DM Mono',monospace;font-size:8px;color:#383838;margin-top:3px;text-transform:uppercase;}
+.up-prev{max-height:56px;max-width:100%;object-fit:contain;filter:grayscale(1);display:none;margin:0 auto;}
+
+/* Toggle */
+.tog{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:13px 15px;margin-bottom:8px;cursor:pointer;user-select:none;touch-action:manipulation;min-height:48px;transition:border-color .15s;}
+.tog.on{border-color:var(--acc);background:var(--dim);}
+.tog-l{font-size:13px;font-weight:500;}
+.tog.on .tog-l{color:var(--acc);}
+.sw{width:40px;height:22px;background:var(--border);border-radius:11px;position:relative;transition:background .2s;flex-shrink:0;}
+.tog.on .sw{background:var(--acc);}
+.sw::after{content:'';position:absolute;width:16px;height:16px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s;}
+.tog.on .sw::after{transform:translateX(18px);}
+
+/* Via */
+.qty{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:12px;}
+.q-btn{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:var(--r);padding:11px;text-align:center;font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;touch-action:manipulation;transition:all .15s;user-select:none;}
+.q-btn.on{border-color:var(--acc);background:var(--dim);color:var(--acc);}
+
+/* Bottom CTA */
+.btm{position:fixed;bottom:0;left:0;right:0;z-index:90;padding:10px 18px;padding-bottom:calc(10px + env(safe-area-inset-bottom));background:rgba(12,12,12,.98);backdrop-filter:blur(12px);border-top:1px solid var(--border);}
+.btn{width:100%;background:var(--acc);color:#000;border:none;border-radius:var(--r);font-family:'DM Mono',monospace;font-weight:600;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:16px;cursor:pointer;touch-action:manipulation;-webkit-appearance:none;display:flex;align-items:center;justify-content:center;min-height:52px;user-select:none;gap:8px;}
+.btn:active{opacity:.75;}
+.btn:disabled{opacity:.3;}
+
+/* Toast */
+.toast{position:fixed;bottom:82px;left:18px;right:18px;z-index:80;padding:11px 16px;border-radius:var(--r);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-align:center;opacity:0;pointer-events:none;transition:opacity .25s;}
+.toast.show{opacity:1;}
+.toast.ok{background:#081f10;border:1px solid var(--green);color:var(--green);}
+.toast.err{background:#200a0a;border:1px solid var(--red);color:var(--red);}
+.toast.ld{background:#141008;border:1px solid var(--acc);color:var(--acc);}
+
+/* ── PRINT ── */
+#prt{display:none;}
+@media print{
+  body>*:not(#prt){display:none!important;}
+  #prt{display:block!important;}
+  @page{size:100mm 150mm;margin:0;}
+  html,body{width:100mm;height:150mm;margin:0;padding:0;background:#fff;}
+  .doc{page-break-after:always;}
+  .doc:last-child{page-break-after:avoid;}
+}
+
+/* ══════════════════════════════
+   DOCUMENTO
+   Borda: 3px
+   Linhas: 1px uniforme
+   ══════════════════════════════ */
+.doc{
+  width:100mm;
+  height:150mm;
+  font-family:Arial,Helvetica,sans-serif;
+  color:#000;
+  background:#fff;
+  border:3px solid #000;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  overflow:hidden;
+}
+
+/* Marca d'água */
+.wm{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:70%;
+  opacity:0.07;
+  pointer-events:none;
+  z-index:0;
+  filter:grayscale(1);
+}
+.doc>*:not(.wm){position:relative;z-index:1;}
+
+/* CABEÇALHO — imagem pura 9.5cm x 3cm */
+.cab-img{
+  width:100%;
+  height:30mm;        /* 3cm exatos */
+  display:block;
+  object-fit:fill;    /* ocupa exato, sem distorção de proporção */
+  object-position:center;
+  filter:grayscale(1);
+  flex-shrink:0;
+  border-bottom:1px solid #000;
+}
+.cab-ph{
+  width:100%;
+  height:30mm;
+  background:#f5f5f5;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-bottom:1px solid #000;
+  flex-shrink:0;
+}
+.cab-ph span{
+  font-size:7pt;
+  color:#aaa;
+  font-family:Arial,sans-serif;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+
+/* CORPO */
+.corpo{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  padding:1.5mm 2mm 1.5mm 2mm;
+  gap:1mm;
+}
+
+/* RECIBO / ORÇAMENTO */
+.doc-tipo{
+  font-size:7pt;
+  font-weight:700;
+  text-align:right;
+  text-transform:uppercase;
+  letter-spacing:.3px;
+  padding-bottom:.5mm;
+  border-bottom:1px solid #000;
+}
+
+/* CAMPOS CLIENTE */
+.campos{
+  display:flex;
+  flex-direction:column;
+  gap:.8mm;
+}
+.linha{
+  display:flex;
+  gap:1.5mm;
+  font-size:6pt;
+  align-items:flex-end;
+}
+.lbl{font-weight:700;white-space:nowrap;}
+.ul{flex:1;border-bottom:1px solid #000;min-height:7px;}
+
+/* TABELA */
+.tbl-wrap{flex:1;}
+.tbl{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+}
+.tbl th,
+.tbl td{
+  border:1px solid #000;
+  padding:0;
+  font-size:6pt;
+}
+.tbl th{
+  font-size:6pt;
+  font-weight:700;
+  text-align:center;
+  padding:1mm 0;
+  background:#fff;
+}
+.tbl td{height:5.5mm;}
+.col-q{width:9mm;}
+.col-u{width:15mm;}
+.col-t{width:15mm;}
+
+/* TOTAL */
+.total{
+  display:flex;
+  border:1px solid #000;
+  font-weight:700;
+  font-size:7pt;
+  flex-shrink:0;
+}
+.total-lbl{flex:1;padding:1.5mm 2mm;text-align:right;}
+.total-val{border-left:1px solid #000;padding:1.5mm 2mm;min-width:20mm;}
+
+/* RODAPÉ */
+.roda{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  flex-shrink:0;
+  padding-top:.5mm;
+}
+.ass{
+  display:flex;flex-direction:column;
+  align-items:flex-start;gap:.8mm;
+}
+.ass-linha{width:26mm;border-top:1px solid #000;}
+.ass-txt{font-size:5pt;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+.agr{font-size:5pt;font-weight:700;text-align:right;line-height:1.3;text-transform:uppercase;}
+.via-n{text-align:center;font-size:4pt;color:#666;margin-top:.5mm;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="badge">PRO</div>
+    <div class="hdr-t">Gerador de Recibo</div>
+  </div>
+  <div class="hdr-v">v8.0</div>
+</div>
+
+<div class="wrap">
+
+  <!-- IMAGEM DO CABEÇALHO -->
+  <div class="sec">Imagem do cabeçalho</div>
+  <label class="upbox" for="f-cab" id="box-cab">
+    <input type="file" id="f-cab" accept="image/*" onchange="loadImg(event,'cab')"
+      style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
+    <div class="up-ico" id="ico-cab">🖼️</div>
+    <div class="up-lbl" id="lbl-cab">Enviar imagem do cabeçalho</div>
+    <div class="up-hint">Proporção ideal: 9,5cm × 3cm · P&amp;B automático</div>
+    <img id="prev-cab" class="up-prev">
+  </label>
+
+  <!-- MARCA D'ÁGUA -->
+  <div class="sec mt">Marca d'água</div>
+  <label class="upbox" for="f-wm" id="box-wm">
+    <input type="file" id="f-wm" accept="image/*" onchange="loadImg(event,'wm')"
+      style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
+    <div class="up-ico" id="ico-wm">💧</div>
+    <div class="up-lbl" id="lbl-wm">Enviar imagem da marca d'água</div>
+    <div class="up-hint">Opacidade 7% · Preto e branco automático</div>
+    <img id="prev-wm" class="up-prev">
+  </label>
+  <div class="tog" id="tog-wm-off" onclick="setWM('off')"><span class="tog-l">Sem marca d'água</span><div class="sw"></div></div>
+  <div class="tog on" id="tog-wm-on" onclick="setWM('on')"><span class="tog-l">Com marca d'água</span><div class="sw"></div></div>
+
+  <!-- CAMPOS OPCIONAIS -->
+  <div class="sec mt">Campos opcionais</div>
+  <div class="tog on" id="tog-vei" onclick="togOpt('vei')"><span class="tog-l">Incluir Veículo / Placa</span><div class="sw"></div></div>
+  <div class="tog on" id="tog-end" onclick="togOpt('end')"><span class="tog-l">Incluir Endereço do cliente</span><div class="sw"></div></div>
+
+  <!-- VIAS -->
+  <div class="sec mt">Quantidade de vias</div>
+  <div class="qty">
+    <div class="q-btn on" onclick="setVias(1,this)">1 via</div>
+    <div class="q-btn" onclick="setVias(2,this)">2 vias</div>
+    <div class="q-btn" onclick="setVias(3,this)">3 vias</div>
+  </div>
+
+</div>
+
+<div class="btm">
+  <button class="btn" id="btn-gerar" onclick="gerar()">↓ Gerar Recibo em PDF</button>
+</div>
+<div class="toast" id="toast"></div>
+<div id="prt"></div>
+
+<script>
+const S = {
+  cab: null,
+  wm:  { gray:null, on:true },
+  vias: 1,
+  opts: { vei:true, end:true }
+};
+
+const get = id => document.getElementById(id)?.value?.trim()||'';
+
+function toast(msg, type){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  if(type !== 'ld') setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+function toGray(src, cb){
+  const img = new Image();
+  img.onload = () => {
+    const cv = document.createElement('canvas');
+    cv.width = img.width; cv.height = img.height;
+    const ctx = cv.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    const d = ctx.getImageData(0, 0, cv.width, cv.height);
+    for(let i = 0; i < d.data.length; i += 4){
+      const g = 0.299*d.data[i] + 0.587*d.data[i+1] + 0.114*d.data[i+2];
+      d.data[i] = d.data[i+1] = d.data[i+2] = g;
+    }
+    ctx.putImageData(d, 0, 0);
+    cb(cv.toDataURL('image/jpeg', 0.95));
+  };
+  img.src = src;
+}
+
+function loadImg(e, key){
+  const file = e.target.files[0]; if(!file) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    toGray(ev.target.result, gray => {
+      if(key === 'cab'){
+        S.cab = gray;
+        document.getElementById('prev-cab').src = gray;
+        document.getElementById('prev-cab').style.display = 'block';
+        document.getElementById('ico-cab').style.display = 'none';
+        document.getElementById('lbl-cab').style.display = 'none';
+        document.getElementById('box-cab').classList.add('has');
+      } else {
+        S.wm.gray = gray;
+        document.getElementById('prev-wm').src = gray;
+        document.getElementById('prev-wm').style.display = 'block';
+        document.getElementById('ico-wm').style.display = 'none';
+        document.getElementById('lbl-wm').style.display = 'none';
+        document.getElementById('box-wm').classList.add('has');
+        setWM('on');
+      }
+    });
+  };
+  r.readAsDataURL(file);
+}
+
+function setWM(val){
+  S.wm.on = val === 'on';
+  document.getElementById('tog-wm-off').classList.toggle('on', val === 'off');
+  document.getElementById('tog-wm-on').classList.toggle('on', val === 'on');
+}
+
+function setVias(n, el){
+  S.vias = n;
+  document.querySelectorAll('.q-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function togOpt(key){
+  S.opts[key] = !S.opts[key];
+  document.getElementById('tog-'+key).classList.toggle('on', S.opts[key]);
+}
+
+// Touch
+['tog-wm-off','tog-wm-on','tog-vei','tog-end'].forEach(id => {
+  const el = document.getElementById(id);
+  if(el) el.addEventListener('touchend', e => { e.preventDefault(); el.click(); }, {passive:false});
+});
+document.getElementById('btn-gerar').addEventListener('touchend', e => { e.preventDefault(); gerar(); }, {passive:false});
+document.querySelectorAll('.q-btn').forEach((btn, i) => {
+  btn.addEventListener('touchend', e => { e.preventDefault(); setVias(i+1, btn); }, {passive:false});
+});
+
+function buildDoc(via){
+  // Cabeçalho — imagem ou placeholder
+  const cabHTML = S.cab
+    ? `<img class="cab-img" src="${S.cab}" alt="">`
+    : `<div class="cab-ph"><span>Imagem do cabeçalho (9,5cm × 3cm)</span></div>`;
+
+  // Marca d'água
+  const wmHTML = (S.wm.on && S.wm.gray)
+    ? `<img class="wm" src="${S.wm.gray}" alt="">` : '';
+
+  // Campos cliente
+  let campos = `
+    <div class="linha">
+      <span class="lbl">Data:</span><span class="ul"></span>
+      <span class="lbl" style="margin-left:2mm">Fone:</span><span class="ul"></span>
+    </div>
+    <div class="linha"><span class="lbl">Cliente:</span><span class="ul"></span></div>`;
+  if(S.opts.end)
+    campos += `<div class="linha"><span class="lbl">Endereço:</span><span class="ul"></span></div>`;
+  if(S.opts.vei)
+    campos += `<div class="linha">
+      <span class="lbl">Veículo:</span><span class="ul"></span>
+      <span class="lbl" style="margin-left:2mm">Placa:</span>
+      <span class="ul" style="max-width:18mm"></span>
+    </div>`;
+
+  // 15 linhas
+  let rows = '';
+  for(let i = 0; i < 15; i++)
+    rows += `<tr><td class="col-q"></td><td></td><td class="col-u"></td><td class="col-t"></td></tr>`;
+
+  const viaHTML = S.vias > 1
+    ? `<div class="via-n">Via ${via} de ${S.vias}</div>` : '';
+
+  return `
+  <div class="doc">
+    ${wmHTML}
+
+    ${cabHTML}
+
+    <div class="corpo">
+      <div class="doc-tipo">RECIBO / ORÇAMENTO</div>
+
+      <div class="campos">${campos}</div>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th class="col-q">Qtd</th>
+              <th>Discriminação</th>
+              <th class="col-u">V. Unit.</th>
+              <th class="col-t">V. Total</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+
+      <div class="total">
+        <span class="total-lbl">TOTAL R$</span>
+        <span class="total-val"></span>
+      </div>
+
+      <div class="roda">
+        <div class="ass">
+          <div class="ass-linha"></div>
+          <span class="ass-txt">Assinatura</span>
+        </div>
+        <span class="agr">Agradecemos<br>a sua preferência</span>
+      </div>
+      ${viaHTML}
+    </div>
+  </div>`;
+}
+
+async function gerar(){
+  if(!S.cab){ toast('Envie a imagem do cabeçalho primeiro', 'err'); return; }
+
+  const btn = document.getElementById('btn-gerar');
+  btn.disabled = true;
+  toast('Preparando...', 'ld');
+
+  let html = '';
+  for(let i = 1; i <= S.vias; i++) html += buildDoc(i);
+  document.getElementById('prt').innerHTML = html;
+
+  await new Promise(r => setTimeout(r, 600));
+  toast('Janela de impressão → "Salvar como PDF"', 'ok');
+  window.print();
+  btn.disabled = false;
+}
+</script>
+</body>
+</html>
