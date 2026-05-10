@@ -155,7 +155,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;pad
   flex-direction:column;
   padding:1.5mm 2mm 1.5mm 2mm;
   gap:0;
-}
+  gap:0;
+  justify-content:flex-start;
 
 /* RECIBO / ORÇAMENTO */
 .doc-tipo{
@@ -173,7 +174,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;pad
   display:flex;
   flex-direction:column;
   gap:2mm;
-  padding:1.5mm 0;
+  padding:.5mm 0;
 }
 .linha{
   display:flex;
@@ -185,9 +186,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;pad
 .ul{flex:1;border-bottom:1px solid #000;min-height:9px;}
 
 /* TABELA */
-.tbl-wrap{flex:1;margin-bottom:0;}
+.tbl-wrap{flex:1;overflow:hidden;}
 .tbl{
   width:100%;
+  height:100%;
   border-collapse:collapse;
   table-layout:fixed;
 }
@@ -204,7 +206,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;pad
   padding:1mm 0;
   background:#fff;
 }
-.tbl td{height:4.8mm;}
+.tbl tbody tr{height:calc(100% / 15);}
+.tbl td{padding:0;}
 .col-q{width:9mm;}
 .col-u{width:15mm;}
 .col-t{width:15mm;}
