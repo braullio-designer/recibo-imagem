@@ -105,7 +105,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;pad
   overflow:hidden;
 }
 
-/* Marca d'água */
+/* Marca d'água — centralizada no corpo do talão */
 .wm{
   position:absolute;
   top:50%;left:50%;
@@ -116,7 +116,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;pad
   z-index:0;
   filter:grayscale(1);
 }
-.doc>*:not(.wm){position:relative;z-index:1;}
+.corpo{position:relative;}
+.corpo>*:not(.wm){position:relative;z-index:1;}
 
 /* CABEÇALHO — imagem pura 9.5cm x 3cm */
 .cab-img{
@@ -153,7 +154,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;pad
   display:flex;
   flex-direction:column;
   padding:1.5mm 2mm 1.5mm 2mm;
-  gap:1mm;
+  gap:.7mm;
 }
 
 /* RECIBO / ORÇAMENTO */
@@ -164,7 +165,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;pad
   text-transform:uppercase;
   letter-spacing:.3px;
   padding-bottom:.5mm;
-  border-bottom:1px solid #000;
 }
 
 /* CAMPOS CLIENTE */
@@ -202,7 +202,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;pad
   padding:1mm 0;
   background:#fff;
 }
-.tbl td{height:5.5mm;}
+.tbl td{height:4.8mm;}
 .col-q{width:9mm;}
 .col-u{width:15mm;}
 .col-t{width:15mm;}
@@ -224,14 +224,24 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;pad
   justify-content:space-between;
   align-items:flex-end;
   flex-shrink:0;
-  padding-top:.5mm;
+  padding-top:1mm;
+  margin-top:1mm;
 }
+/* Assinatura — centralizada, linha maior */
 .ass{
   display:flex;flex-direction:column;
-  align-items:flex-start;gap:.8mm;
+  align-items:center;
+  gap:.8mm;
 }
-.ass-linha{width:26mm;border-top:1px solid #000;}
-.ass-txt{font-size:5pt;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+.ass-linha{
+  width:35mm;
+  border-top:1px solid #000;
+}
+.ass-txt{
+  font-size:5pt;font-weight:700;
+  letter-spacing:.5px;text-transform:uppercase;
+  text-align:center;
+}
 .agr{font-size:5pt;font-weight:700;text-align:right;line-height:1.3;text-transform:uppercase;}
 .via-n{text-align:center;font-size:4pt;color:#666;margin-top:.5mm;}
 </style>
@@ -417,11 +427,10 @@ function buildDoc(via){
 
   return `
   <div class="doc">
-    ${wmHTML}
-
     ${cabHTML}
 
     <div class="corpo">
+      ${wmHTML}
       <div class="doc-tipo">RECIBO / ORÇAMENTO</div>
 
       <div class="campos">${campos}</div>
